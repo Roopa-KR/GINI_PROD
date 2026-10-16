@@ -13,7 +13,7 @@ python -m pip install -r requirements-dev.txt
 python app.py
 ```
 
-Open `http://127.0.0.1:5007/` in your browser. If PowerShell blocks activation, use `.\.venv\Scripts\python.exe -m pip install -r requirements-manufacturing.txt` and `.\.venv\Scripts\python.exe app.py` directly. To run the focused manufacturing and route tests: `python -m pytest -q tests/test_mfg_logic.py tests/test_mfg_render.py tests/test_mfg_schema.py tests/test_manufacturing_routes.py`. Flask route tests need Flask installed; they are skipped in an environment without it.
+Open `http://127.0.0.1:5008/` in your browser. If PowerShell blocks activation, use `.\.venv\Scripts\python.exe -m pip install -r requirements-manufacturing.txt` and `.\.venv\Scripts\python.exe app.py` directly. To run the focused manufacturing and route tests: `python -m pytest -q tests/test_mfg_logic.py tests/test_mfg_render.py tests/test_mfg_schema.py tests/test_manufacturing_routes.py`. Flask route tests need Flask installed; they are skipped in an environment without it.
 
 ### Navigation
 
@@ -49,3 +49,22 @@ See `docs/manufacturing/IMPLEMENTATION_AND_TEST_REPORT.md` for source mapping, a
 ## Latest code audit
 
 See `docs/manufacturing/CODE_REVIEW_AND_VALIDATION_20261016.md` for the exact defects corrected, executed checks, new integration tests, and remaining customer-demonstration blockers. The application now requires Pillow to validate inspection evidence images; it is included in `requirements-manufacturing.txt`.
+
+## New: operator execution, work orders, LMS and confirmed points (16 October 2026)
+
+The additional source references (`EN_Siemens_CTQ_Guide 1(2).xlsx`, `Mockup ingles html(1).html`, 00:04–04:07 of Rajesh's transcript, and four newly confirmed point weights) informed a cautious shop-floor extension:
+
+- `/operator` — choose WC1–WC8, worker and physical unit; start/pause/resume/finish UTC-clocked task; inspect source CTQs; record an incoming decision or report a defect.
+- `/work-orders` — drill from work order to work-center stage and unit, with CTQ/task/receiving/defect history.
+- `/lms` — measured task time and activity, work-order flow, exact confirmed points **policy** and visible eligibility/pending evidence. Automatic worker ranking/penalties, unresolved rework dispositions and arbitrary standard times are intentionally disabled.
+- `/api/operator/tasks` — raw UTC activity record, labeled synthetic data.
+
+`manufacturing/shopfloor.py` persists operator and handover events in SQLite and prevents double-booking. `manufacturing/scoring.py` encodes confirmed weights (+3, +2, −4, ±1/min) but **will not assign points to workers or settle unconfirmed defect reports**. Source/quality rules in `manufacturing/data/ctq_rules.json` and old routes remain intact. The historical PDF replay and new UTC event timestamps are separate; a new task does not imply that the fixed PDF ETC has dynamically recalculated.
+
+Run focused regression tests with:
+
+```powershell
+python -m pytest -q tests/test_mfg_logic.py tests/test_mfg_schema.py tests/test_mfg_render.py tests/test_shopfloor_logic.py tests/test_manufacturing_routes.py
+```
+
+For implemented functionality, exact non-goals, 20 open clarification questions, and the test limitations, see `docs/manufacturing/SHOPFLOOR_IMPLEMENTATION_AND_OPEN_QUESTIONS_20261016.md` and `docs/manufacturing/SHOPFLOOR_TEST_REPORT_20261016.md`.

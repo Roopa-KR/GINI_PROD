@@ -19,6 +19,7 @@ from manufacturing.model import (
     centers_with_counts, workers_for_scenario, verify_candidate
 )
 from manufacturing.quality_logic import compute_quality_state, can_inspect_at_stage, evidence_is_valid_image
+from manufacturing.shopfloor import setup as setup_shopfloor, apply_active_defect_holds
 
 ROOT=Path(__file__).resolve().parent
 ALLOWED_EVIDENCE={'png','jpg','jpeg','webp'}
@@ -69,6 +70,7 @@ def create_app(test_config=None):
                 proposed_at TEXT NOT NULL, approved_at TEXT, started_at TEXT, completed_at TEXT,
                 worker_id TEXT, from_wc TEXT, to_wc TEXT, replacement_id TEXT, note TEXT);
             ''')
+            setup_shopfloor(db)
             columns={r[1] for r in db.execute('PRAGMA table_info(inspection_audit)')}
             if 'evidence_filename' not in columns:
                 db.execute('ALTER TABLE inspection_audit ADD COLUMN evidence_filename TEXT')
@@ -145,12 +147,25 @@ def create_app(test_config=None):
         # Proposed replacements belong only to branches that actually consider them.
         include_replacement=scenario in REPLACEMENT_SCENARIOS and asof>='10:55'
         is_approved=bool(approved) and scenario in ('recovered','actual')
-        return [unit_view(u,asof,ov,is_approved,scenario) for u in UNITS
+        units=[unit_view(u,asof,ov,is_approved,scenario) for u in UNITS
                 if u['id']!='TANK-0021' or include_replacement]
+        if asof>='10:55':
+            with connect() as db:
+                pending={r['unit_id'] for r in db.execute(
+                    "SELECT DISTINCT unit_id FROM shop_defects WHERE status='OPEN'")}
+            units=apply_active_defect_holds(units,pending)
+        return units
 
     def context(scene=None,asof=None):
         s,t=scenarios_state(scene,asof)
         rec=approved_recovery()
+        with connect() as db:
+            open_defect_ids={r['unit_id'] for r in db.execute(
+                "SELECT DISTINCT unit_id FROM shop_defects WHERE status='OPEN'")}
+        if open_defect_ids and t>='10:55':
+            s['changed']=True
+            s['finish']='Recalc needed'
+            s['description']+=' Open shop-floor defect reports require review; the fixed scenario is not a fresh production forecast.'
         us=data_units(t,s['id'],bool(rec))
         tank=[u for u in us if u['type']=='Tank']
         people=workers_for_scenario(s['id'],t)
@@ -163,7 +178,7 @@ def create_app(test_config=None):
         if t>='10:48' and s['id'] in SCRAP_SCENARIOS:
             alerts.append({'color':'red','time':'10:48','title':'TANK-0018 scrapped permanently','desc':'First-stage failure; cannot be reused.','href':'unit_detail','ref':'TANK-0018'})
         if s['changed']:
-            alerts.insert(0,{'color':'red','time':t,'title':'Additional inspection hold/scrap','desc':'Quantity projection adjusted; completion ETA requires recalculation.','href':'units','ref':None})
+            alerts.insert(0,{'color':'red','time':t,'title':'Production/quality change needs review','desc':'A recorded inspection or open issue invalidates the canned ETA. Full rescheduling is not yet implemented.','href':'units','ref':None})
         if s['good']<10 and t>='10:48':
             alerts.insert(0,{'color':'red','time':t,'title':'ORD-1042 deadline at risk','desc':f"Projected {s['good']} of 10 good tanks by 14:30.",'href':'recovery','ref':None})
         registered=[u for u in tank if u['status']!='Proposed replacement']
@@ -287,6 +302,9 @@ def create_app(test_config=None):
         unit=UNIT_MAP[unit_id]
         if request.method=='POST':
             csrf_required(lambda:None)()
+            with connect() as db:
+                if db.execute("SELECT 1 FROM shop_defects WHERE unit_id=? AND status='OPEN'",(unit_id,)).fetchone():
+                    abort(409,'This unit has an open defect report; quality review is required before new CTQ release.')
             if unit_id=='TANK-0018':abort(409,'Permanent scrap cannot be reversed or re-inspected.')
             if unit_id=='TANK-0021' and not approved_recovery():
                 abort(409,'Approve the replacement scenario before inspecting its new physical unit.')
@@ -357,8 +375,10 @@ def create_app(test_config=None):
             return redirect(url_for('unit_detail',unit_id=unit_id))
         ctx=context();view_unit=next((x for x in ctx['units'] if x['id']==unit_id),None)
         if view_unit is None:abort(404)
+        with connect() as db:
+            has_open_defect=bool(db.execute("SELECT 1 FROM shop_defects WHERE unit_id=? AND status='OPEN'",(unit_id,)).fetchone())
         ctx.update(unit=view_unit,check=check,
-                   inspection_allowed=(unit_id!='TANK-0018' and can_inspect_at_stage(unit,overrides().get(unit_id,unit),check['wc'],ROUTES) and (unit_id!='TANK-0021' or bool(approved_recovery()))),
+                   inspection_allowed=(not has_open_defect and unit_id!='TANK-0018' and can_inspect_at_stage(unit,overrides().get(unit_id,unit),check['wc'],ROUTES) and (unit_id!='TANK-0021' or bool(approved_recovery()))),
                    existing=check_results(unit_id).get(check_id) if ctx['asof']>='10:55' else None)
         return render_template('mfg/inspection.html',**ctx)
 
@@ -404,6 +424,8 @@ def create_app(test_config=None):
     def reset_demo():
         with connect() as db:
             db.execute('DELETE FROM action_log');db.execute('DELETE FROM inspection_results');db.execute('DELETE FROM inspection_audit');db.execute('DELETE FROM unit_state')
+            db.execute('DELETE FROM shop_task_events');db.execute('DELETE FROM shop_tasks')
+            db.execute('DELETE FROM shop_handover_checks');db.execute('DELETE FROM shop_defects')
         evidence_dir=Path(app.config['EVIDENCE_DIR'])
         if evidence_dir.exists():
             for file in evidence_dir.iterdir():
@@ -426,10 +448,12 @@ def create_app(test_config=None):
     def api_units():
         ctx=context();return jsonify(ctx['units'])
 
+    from manufacturing.shop_routes import register_shopfloor_routes
+    register_shopfloor_routes(app,connect,csrf_required,context,data_units,check_results,overrides,approved_recovery)
+
     return app
 
 app=create_app()
 if __name__=='__main__':
-    port = int(os.getenv('PORT', '5007'))
-    print(f'GiNi Production Flow & Recovery — synthetic demonstration — http://127.0.0.1:{port}')
-    app.run(host='127.0.0.1',port=port,debug=False)
+    print('GiNi Production Flow & Recovery — synthetic demonstration — http://127.0.0.1:5006')
+    app.run(host='127.0.0.1',port=int(os.getenv('PORT',5006)),debug=False)

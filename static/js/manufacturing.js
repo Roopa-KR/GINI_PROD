@@ -9,6 +9,22 @@
     shade.addEventListener('click', close);
     window.addEventListener('keydown', ev => { if (ev.key === 'Escape') close(); });
   }
+  // Presentation-only ticking clock. Persisted UTC events remain authoritative.
+  const clocks = document.querySelectorAll('.shop-clock[data-running="true"]');
+  if (clocks.length) {
+    const start = Date.now();
+    const hms = total => {
+      const hours = Math.floor(total / 3600).toString().padStart(2,'0');
+      const mins = Math.floor(total % 3600 / 60).toString().padStart(2,'0');
+      const secs = Math.floor(total % 60).toString().padStart(2,'0');
+      return `${hours}:${mins}:${secs}`;
+    };
+    const render = () => {
+      const added = Math.max(0, Math.floor((Date.now() - start) / 1000));
+      clocks.forEach(el => { el.textContent = hms(Number(el.dataset.seconds || 0) + added); });
+    };
+    render(); window.setInterval(render, 1000);
+  }
   const answer = document.getElementById('answer');
   const evidence = document.getElementById('evidence');
   if (answer && evidence && answer.tagName === 'SELECT') {

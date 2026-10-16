@@ -58,6 +58,6 @@ py -3 -m venv .venv
 .\.venv\Scripts\python.exe app.py
 ```
 
-Visit `http://127.0.0.1:5007/`. The main screens are `/`, `/units`, `/work-centers`, `/workers`, `/quality`, `/recovery`. Use the **Reset synthetic scenario data** button after testing data mutations. Never use this demo with real sensitive client production/inspection records.
+Visit `http://127.0.0.1:5006/`. The main screens are `/`, `/units`, `/work-centers`, `/workers`, `/quality`, `/recovery`. Use the **Reset synthetic scenario data** button after testing data mutations. Never use this demo with real sensitive client production/inspection records.
 
 **Readiness: not yet customer-demo certified.** Route integration and deployment on the customer's environment remain mandatory, and a general-purpose ETC/recovery solver remains unimplemented.

@@ -138,3 +138,47 @@ def test_errors_are_not_silently_accepted(client):
     assert client.get('/quality/TANK-0020/INVALID').status_code==404
     assert client.get('/quality/evidence/TANK-0020/CTQ-003').status_code==404
     assert client.get('/api/recovery/check/W-INVALID').status_code==404
+
+
+@pytest.mark.parametrize('url', ['/operator','/work-orders','/lms','/api/operator/tasks'])
+def test_new_shopfloor_routes(client,url):
+    response=client.get(url)
+    assert response.status_code==200,(url,response.data[:500])
+
+
+def test_operator_task_start_pause_resume_finish_and_double_booking(client):
+    token=csrf(client)
+    path='/operator/start'
+    base={'csrf_token':token,'wc':'WC1','worker_id':'W-001','unit_id':'TANK-0019'}
+    assert client.post(path,data={k:v for k,v in base.items() if k!='csrf_token'}).status_code==403
+    assert client.post(path,data=base).status_code==302
+    payload=client.get('/api/operator/tasks').json['tasks']
+    assert payload[0]['status']=='RUNNING'
+    task_id=payload[0]['task_id']
+    assert client.post(path,data={**base,'unit_id':'TANK-0020'}).status_code==302
+    assert len(client.get('/api/operator/tasks').json['tasks'])==1
+    assert client.post(f'/operator/tasks/{task_id}/pause',data={'csrf_token':token}).status_code==302
+    assert client.get('/api/operator/tasks').json['tasks'][0]['status']=='PAUSED'
+    assert client.post(f'/operator/tasks/{task_id}/resume',data={'csrf_token':token}).status_code==302
+    assert client.post(f'/operator/tasks/{task_id}/finish',data={'csrf_token':token}).status_code==302
+    assert client.get('/api/operator/tasks').json['tasks'][0]['status']=='FINISHED'
+    # Task finish alone never marks quality complete or changes any other unit.
+    unit=next(u for u in client.get('/api/units').json if u['id']=='TANK-0019')
+    assert unit['status']=='In progress'
+
+
+def test_downstream_defect_holds_only_affected_unit_and_blocks_ctq(client):
+    token=csrf(client)
+    response=client.post('/operator/incoming',data={
+        'csrf_token':token,'unit_id':'TANK-0017','wc':'WC3','worker_id':'W-010',
+        'outcome':'DEFECT_REPORTED','note':'Dimensional issue found at receipt'})
+    assert response.status_code==302
+    units={u['id']:u for u in client.get('/api/units').json}
+    assert units['TANK-0017']['status']=='Hold'
+    assert units['TANK-0019']['status']=='In progress'
+    assert client.post('/quality/TANK-0017/CTQ-012',data={
+        'csrf_token':token,'value':'No'}).status_code==409
+    html=client.get('/lms').data.decode('utf-8')
+    assert 'pending confirmation' in html
+    # No automated worker blame or persisted points appear in task JSON.
+    assert 'score' not in client.get('/api/operator/tasks').json

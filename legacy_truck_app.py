@@ -1,4 +1,4 @@
-"""Truck ETC supervisor app (Flask). Run: python app.py  ->  http://127.0.0.1:5007"""
+"""Truck ETC supervisor app (Flask). Run: python app.py  ->  http://127.0.0.1:5006"""
 from flask import Flask, abort, render_template, request, session, redirect, url_for, flash, Response, jsonify
 
 import config
@@ -871,4 +871,4 @@ app = create_app()
 
 if __name__ == "__main__":
     import os
-    app.run(debug=os.getenv('FLASK_DEBUG','0') == '1', port=5007)
+    app.run(debug=os.getenv('FLASK_DEBUG','0') == '1', port=5006)

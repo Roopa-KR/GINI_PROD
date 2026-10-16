@@ -78,7 +78,7 @@ python -m pip install -r requirements.txt
 python app.py
 ```
 
-Open http://127.0.0.1:5007/ or `/planner`. To rebuild results from active workbook run `python -m flask --app app init-db`. Do not run development synthesis script as part of app startup. The HTML interface and Excel-source calculation formulas are preserved.
+Open http://127.0.0.1:5006/ or `/planner`. To rebuild results from active workbook run `python -m flask --app app init-db`. Do not run development synthesis script as part of app startup. The HTML interface and Excel-source calculation formulas are preserved.
 
 ---
 
@@ -141,7 +141,7 @@ pip install -r requirements.txt
 python app.py                   # first start builds data/truck_etc.db from the workbook (~5 s)
 ```
 
-Open http://127.0.0.1:5007 and pick a snapshot (16:15 ... 20:30; default 18:15).
+Open http://127.0.0.1:5006 and pick a snapshot (16:15 ... 20:30; default 18:15).
 The database is rebuilt automatically whenever `data/workbook.xlsx` changes.
 
 | Task | Command |

@@ -16,6 +16,11 @@
   <a class="nav-link {% if request.endpoint in ('units','unit_detail') %}selected{% endif %}" href="{{url_for('units')}}"><span class="nav-icon">⬡</span>Tanks & components</a>
   <a class="nav-link {% if request.endpoint in ('workers','worker_detail') %}selected{% endif %}" href="{{url_for('workers')}}"><span class="nav-icon">♙</span>Workforce</a>
  </nav>
+ <div class="nav-section">SHOP-FLOOR EXECUTION</div><nav>
+  <a class="nav-link {% if request.endpoint in ('operator_console','start_shop_task','shop_task_transition','shop_report_issue','incoming_shop_inspection') %}selected{% endif %}" href="{{url_for('operator_console')}}"><span class="nav-icon">◷</span>Operator console</a>
+  <a class="nav-link {% if request.endpoint=='work_orders' %}selected{% endif %}" href="{{url_for('work_orders')}}"><span class="nav-icon">▤</span>Work orders</a>
+  <a class="nav-link {% if request.endpoint=='lms_dashboard' %}selected{% endif %}" href="{{url_for('lms_dashboard')}}"><span class="nav-icon">◫</span>LMS & points</a>
+ </nav>
  <div class="nav-section">QUALITY & DECISIONS</div><nav>
   <a class="nav-link {% if request.endpoint in ('quality','inspection_form') %}selected{% endif %}" href="{{url_for('quality')}}"><span class="nav-icon">☑</span>CTQ inspections</a>
   <a class="nav-link {% if request.endpoint=='recovery' %}selected{% endif %}" href="{{url_for('recovery')}}"><span class="nav-icon">↗</span>Recovery planner <span class="attention-dot"></span></a>
