@@ -98,7 +98,7 @@ def create_app(test_config=None):
         return resp
 
     def approved_recovery():
-        with connect() as db:return db.execute("SELECT * FROM action_log WHERE action_key='arun_replacement' AND state='approved'").fetchone()
+        with connect() as db:return db.execute("SELECT * FROM action_log WHERE action_key='qualified_transfer_replacement' AND state='approved'").fetchone()
 
     def overrides():
         with connect() as db:
@@ -414,9 +414,9 @@ def create_app(test_config=None):
         with connect() as db:
             db.execute('''INSERT OR IGNORE INTO action_log(action_key,action_type,actor,state,proposed_at,approved_at,
                 started_at,worker_id,from_wc,to_wc,replacement_id,note) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)''',
-                ('arun_replacement','qualified_transfer_and_replacement',actor,'approved',now,now,now,'W-012','WC4','WC1','TANK-0021',
+                ('qualified_transfer_replacement','qualified_transfer_and_replacement',actor,'approved',now,now,now,'W-012','WC4','WC1','TANK-0021',
                 'PDF demo plan; 15-min handover planned, 20-min illustrative replay. Not an actual factory action.'))
-        flash('Demo recovery approved: transfer Arun from WC4 and create TANK-0021. The 14:21 plan is an illustrative forecast.','success')
+        flash('Demo recovery approved: transfer Aaron from WC4 and create TANK-0021. The 14:21 plan is an illustrative forecast.','success')
         return redirect(url_for('recovery',scenario='recovered'))
 
     @app.route('/api/recovery/reset',methods=['POST'])
@@ -455,5 +455,5 @@ def create_app(test_config=None):
 
 app=create_app()
 if __name__=='__main__':
-    print('GiNi Production Flow & Recovery — synthetic demonstration — http://127.0.0.1:5006')
-    app.run(host='127.0.0.1',port=int(os.getenv('PORT',5006)),debug=False)
+    print('GiNi Production Flow & Recovery — synthetic demonstration — http://127.0.0.1:5008')
+    app.run(host='127.0.0.1',port=int(os.getenv('PORT',5008)),debug=False)

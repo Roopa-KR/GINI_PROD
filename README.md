@@ -52,7 +52,7 @@ See `docs/manufacturing/CODE_REVIEW_AND_VALIDATION_20261016.md` for the exact de
 
 ## New: operator execution, work orders, LMS and confirmed points (16 October 2026)
 
-The additional source references (`EN_Siemens_CTQ_Guide 1(2).xlsx`, `Mockup ingles html(1).html`, 00:04–04:07 of Rajesh's transcript, and four newly confirmed point weights) informed a cautious shop-floor extension:
+The additional source references (`EN_Siemens_CTQ_Guide 1(2).xlsx`, `Mockup ingles html(1).html`, 00:04–04:07 of Robert's transcript, and four newly confirmed point weights) informed a cautious shop-floor extension:
 
 - `/operator` — choose WC1–WC8, worker and physical unit; start/pause/resume/finish UTC-clocked task; inspect source CTQs; record an incoming decision or report a defect.
 - `/work-orders` — drill from work order to work-center stage and unit, with CTQ/task/receiving/defect history.
