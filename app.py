@@ -16,7 +16,7 @@ from flask import Flask, abort, render_template, request, redirect, url_for, ses
 from manufacturing.model import (
     CENTERS, CENTER_MAP, WORKERS, WORKER_MAP, UNITS, UNIT_MAP, ROUTES, CTQ_RULES,
     SCENARIOS, SCENARIO_ORDER, ABSENCE_SCENARIOS, SCRAP_SCENARIOS, REPLACEMENT_SCENARIOS, visible_events, unit_view, ordered_ctqs,
-    centers_with_counts, workers_for_scenario, verify_candidate
+    centers_with_counts, workers_for_scenario, verify_candidate, reference_transfer_crew
 )
 from manufacturing.quality_logic import compute_quality_state, can_inspect_at_stage, evidence_is_valid_image
 from manufacturing.shopfloor import setup as setup_shopfloor, apply_active_defect_holds
@@ -98,7 +98,7 @@ def create_app(test_config=None):
         return resp
 
     def approved_recovery():
-        with connect() as db:return db.execute("SELECT * FROM action_log WHERE action_key='qualified_transfer_replacement' AND state='approved'").fetchone()
+        with connect() as db:return db.execute("SELECT * FROM action_log WHERE action_key='arun_replacement' AND state='approved'").fetchone()
 
     def overrides():
         with connect() as db:
@@ -395,6 +395,7 @@ def create_app(test_config=None):
     @app.route('/recovery')
     def recovery():
         ctx=context();ctx['candidates']=[{'worker':WORKER_MAP[i],'test':verify_candidate(i,ctx['scene']['id'],ctx['asof'])} for i in ('W-012','W-006','W-023')]
+        ctx['crew_preview']=reference_transfer_crew()
         return render_template('mfg/recovery.html',**ctx)
 
     @app.route('/api/recovery/check/<worker_id>')
@@ -414,9 +415,9 @@ def create_app(test_config=None):
         with connect() as db:
             db.execute('''INSERT OR IGNORE INTO action_log(action_key,action_type,actor,state,proposed_at,approved_at,
                 started_at,worker_id,from_wc,to_wc,replacement_id,note) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)''',
-                ('qualified_transfer_replacement','qualified_transfer_and_replacement',actor,'approved',now,now,now,'W-012','WC4','WC1','TANK-0021',
+                ('arun_replacement','qualified_transfer_and_replacement',actor,'approved',now,now,now,'W-012','WC4','WC1','TANK-0021',
                 'PDF demo plan; 15-min handover planned, 20-min illustrative replay. Not an actual factory action.'))
-        flash('Demo recovery approved: transfer Aaron from WC4 and create TANK-0021. The 14:21 plan is an illustrative forecast.','success')
+        flash('Demo recovery approved: transfer Arun from WC4 and create TANK-0021. The 14:21 plan is an illustrative forecast.','success')
         return redirect(url_for('recovery',scenario='recovered'))
 
     @app.route('/api/recovery/reset',methods=['POST'])
@@ -455,5 +456,5 @@ def create_app(test_config=None):
 
 app=create_app()
 if __name__=='__main__':
-    print('GiNi Production Flow & Recovery — synthetic demonstration — http://127.0.0.1:5008')
-    app.run(host='127.0.0.1',port=int(os.getenv('PORT',5008)),debug=False)
+    print('GiNi Production Flow & Recovery — synthetic demonstration — http://127.0.0.1:5006')
+    app.run(host='127.0.0.1',port=int(os.getenv('PORT',5006)),debug=False)

@@ -183,7 +183,7 @@ Where actual production data is insufficient, create a realistic synthetic datas
 
 ### B. Tank Performance dashboard terminology changes
 
-Implement the following changes explicitly requested during the project review with Robert.
+Implement the following changes explicitly requested during the project review with Rajesh.
 
 | Existing terminology | Required terminology |
 |---|---|
@@ -742,7 +742,7 @@ Synthetic production records and staffing scenarios must never be presented as a
 
 ## 13. Mandatory Testing and Regression Validation
 
-Robert explicitly instructed Rachel to ensure that nothing breaks after making the changes and to test the application before the customer demonstration.
+Rajesh explicitly instructed Roopa to ensure that nothing breaks after making the changes and to test the application before the customer demonstration.
 
 **Testing is mandatory. Do not declare the application ready merely because the code has been changed or the application starts.**
 

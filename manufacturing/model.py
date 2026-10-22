@@ -25,23 +25,23 @@ CENTER_MAP = {w['id']:w for w in CENTERS}
 ROUTES = {'Tank':['WC1','WC2','WC3','WC4'], 'Cover':['WC5','WC6'], 'Accessories':['WC7','WC8']}
 
 WORKERS = [
- {'id':'W-001','name':'Sarah Parker','home':'WC1','skills':['WC1'],'state':'Working','unit':'TANK-0019','since':'06:00'},
- {'id':'W-002','name':'Daniel Shaw','home':'WC1','skills':['WC1'],'state':'Working','unit':'TANK-0019','since':'06:00'},
- {'id':'W-003','name':'Megan Davis','home':'WC1','skills':['WC1'],'state':'Working','unit':'TANK-0019','since':'06:00'},
- {'id':'W-004','name':'Kevin Ross','home':'WC1','skills':['WC1'],'state':'Working','unit':'TANK-0019','since':'06:00'},
- {'id':'W-005','name':'Ryan Cooper','home':'WC1','skills':['WC1'],'state':'Absent','unit':None,'since':None},
- {'id':'W-006','name':'Paige Nelson','home':'WC2','skills':['WC2','WC1'],'state':'Waiting','unit':None,'since':'09:55'},
+ {'id':'W-001','name':'Sana Patel','home':'WC1','skills':['WC1'],'state':'Working','unit':'TANK-0019','since':'06:00'},
+ {'id':'W-002','name':'Dev Shah','home':'WC1','skills':['WC1'],'state':'Working','unit':'TANK-0019','since':'06:00'},
+ {'id':'W-003','name':'Meera Das','home':'WC1','skills':['WC1'],'state':'Working','unit':'TANK-0019','since':'06:00'},
+ {'id':'W-004','name':'Kiran Rao','home':'WC1','skills':['WC1'],'state':'Working','unit':'TANK-0019','since':'06:00'},
+ {'id':'W-005','name':'Ravi Kumar','home':'WC1','skills':['WC1'],'state':'Absent','unit':None,'since':None},
+ {'id':'W-006','name':'Priya Nair','home':'WC2','skills':['WC2','WC1'],'state':'Waiting','unit':None,'since':'09:55'},
  {'id':'W-007','name':'Tom Wilson','home':'WC2','skills':['WC2'],'state':'Waiting','unit':None,'since':'09:55'},
  {'id':'W-008','name':'Lin Chen','home':'WC2','skills':['WC2'],'state':'Waiting','unit':None,'since':'09:55'},
  {'id':'W-009','name':'Ahmed Ali','home':'WC2','skills':['WC2'],'state':'Waiting','unit':None,'since':'09:55'},
- {'id':'W-010','name':'Nicole Rogers','home':'WC3','skills':['WC3'],'state':'Working','unit':'TANK-0017','since':'08:00'},
+ {'id':'W-010','name':'Nina Roy','home':'WC3','skills':['WC3'],'state':'Working','unit':'TANK-0017','since':'08:00'},
  {'id':'W-011','name':'Joel Moss','home':'WC3','skills':['WC3'],'state':'Working','unit':'TANK-0017','since':'08:00'},
- {'id':'W-012','name':'Aaron Miller','home':'WC4','skills':['WC4','WC1'],'state':'Waiting','unit':None,'since':'08:00'},
+ {'id':'W-012','name':'Arun Mehta','home':'WC4','skills':['WC4','WC1'],'state':'Waiting','unit':None,'since':'08:00'},
  {'id':'W-013','name':'Beth Ward','home':'WC4','skills':['WC4'],'state':'Waiting','unit':None,'since':'08:00'},
- {'id':'W-014','name':'Taylor Smith','home':'WC5','skills':['WC5'],'state':'Working','unit':'COVER-1002','since':'06:00'},
+ {'id':'W-014','name':'Tara Singh','home':'WC5','skills':['WC5'],'state':'Working','unit':'COVER-1002','since':'06:00'},
  {'id':'W-015','name':'Oscar Lee','home':'WC5','skills':['WC5'],'state':'Working','unit':'COVER-1002','since':'06:00'},
  {'id':'W-016','name':'Evan Price','home':'WC5','skills':['WC5'],'state':'Working','unit':'COVER-1002','since':'06:00'},
- {'id':'W-017','name':'Isabella Brooks','home':'WC6','skills':['WC6'],'state':'Working','unit':'COVER-1001','since':'06:00'},
+ {'id':'W-017','name':'Isha Bose','home':'WC6','skills':['WC6'],'state':'Working','unit':'COVER-1001','since':'06:00'},
  {'id':'W-018','name':'Marc Silva','home':'WC6','skills':['WC6'],'state':'Working','unit':'COVER-1001','since':'06:00'},
  {'id':'W-019','name':'Ava Grant','home':'WC7','skills':['WC7'],'state':'Working','unit':'ACC-2002','since':'06:00'},
  {'id':'W-020','name':'Leo Park','home':'WC7','skills':['WC7'],'state':'Working','unit':'ACC-2002','since':'06:00'},
@@ -58,15 +58,15 @@ SCENARIOS = {
  'combined':{'name':'Combined disruption','short':'Absence + permanent scrap','good':9,'finish':'13:55','wait':115,'severity':'danger','description':'WC1 is short-staffed and TANK-0018 is scrapped. The order is short one good tank.'},
  'replacement':{'name':'Replacement only','short':'Replacement without labor transfer','good':9,'finish':'14:45','wait':135,'severity':'danger','description':'Replacement starts too late at understaffed WC1; tenth unit finishes after the due time.'},
  'relief':{'name':'Replacement + relief','short':'Relief available from 12:30','good':9,'finish':'14:37','wait':127,'severity':'danger','description':'Relief worker arrives too late to protect the 14:30 deadline.'},
- 'recovered':{'name':'Approved recovery','short':'Aaron transfer + TANK-0021','good':10,'finish':'14:21','wait':111,'severity':'success','description':'A qualified transfer from WC4 to WC1 and one material-backed replacement recover the order.'},
+ 'recovered':{'name':'Approved recovery','short':'Arun transfer + TANK-0021','good':10,'finish':'14:21','wait':111,'severity':'success','description':'A qualified transfer from WC4 to WC1 and one material-backed replacement recover the order.'},
  'actual':{'name':'Illustrative actual replay','short':'20-minute handover instead of 15','good':10,'finish':'14:22','wait':112,'severity':'success','description':'Replay uses a 20-minute handover. Not observed Siemens factory performance.'},
 }
 SCENARIO_ORDER = ['normal','absence','scrap','combined','replacement','relief','recovered','actual']
 
 # Event_time and known_at are separate. No view may expose an event before known_at.
 EVENTS = [
- {'id':'EV-100','unit':None,'event_time':'06:05','known_at':'06:05','type':'absence','title':'Ryan absence confirmed','text':'WC1 crew is 4 of 5. Minimum crew is still met.','wc':'WC1'},
- {'id':'EV-101','unit':'TANK-0018','event_time':'09:20','known_at':'09:20','type':'work','title':'WC1 pre-assembly started','text':'Crew Sarah, Daniel, Megan, Kevin','wc':'WC1'},
+ {'id':'EV-100','unit':None,'event_time':'06:05','known_at':'06:05','type':'absence','title':'Ravi absence confirmed','text':'WC1 crew is 4 of 5. Minimum crew is still met.','wc':'WC1'},
+ {'id':'EV-101','unit':'TANK-0018','event_time':'09:20','known_at':'09:20','type':'work','title':'WC1 pre-assembly started','text':'Crew Sana, Dev, Meera, Kiran','wc':'WC1'},
  {'id':'EV-102','unit':'TANK-0018','event_time':'10:40','known_at':'10:48','type':'scrap','title':'TANK-0018 failed first-stage gate','text':'Illustrative shell length 1,207 mm vs demo limit 1,195–1,205 mm; SCRAP, permanent.','wc':'WC1'},
  {'id':'EV-103','unit':None,'event_time':'09:55','known_at':'09:55','type':'waiting','title':'WC2 queue depleted','text':'Assembly crew available; upstream approved tank supply is limiting.','wc':'WC2'},
  {'id':'EV-104','unit':'TANK-0021','event_time':'10:55','known_at':'10:55','type':'proposed','title':'Replacement feasibility assessed','text':'One spare kit, lot ML-0415. The unit has not been manufactured.','wc':'WC1'},
@@ -212,3 +212,29 @@ def workers_for_scenario(scenario='combined',asof='10:55'):
    elif asof>=returned:
     w['state']='Back at WC4';w['unit']=None
  return people
+
+
+def reference_transfer_crew():
+    """Crew bars for the 10:55 combined-disruption recovery *proposal*.
+
+    This is a what-if preview, not a claim that the move already happened.
+    Both stations are accounted for and no new employee is fabricated.
+    """
+    baseline = {c['id']: c for c in centers_with_counts([], 'combined', '10:55')}
+    decision = verify_candidate('W-012', 'combined', '10:55')
+    source = WORKER_MAP['W-012']['home']
+    target = 'WC1'
+    feasible = decision['feasible']
+    rows = []
+    for station, change in ((target, +1), (source, -1)):
+        c = baseline[station]
+        before = c['present']
+        after = before + change if feasible else before
+        rows.append({'id': station, 'name': c['name'],
+                     'planned': c['planned'], 'minimum': c['min_crew'],
+                     'before': before, 'after': after,
+                     'scale': max(1, c['planned'], before, after),
+                     'safe': after >= c['min_crew']})
+    return {'rows': rows, 'feasible': feasible,
+            'worker': WORKER_MAP['W-012']['name'], 'reference_time': '10:55',
+            'move_time': '11:10', 'scenario': 'combined'}

@@ -75,8 +75,8 @@
     const label = (x, text, anchor, y = 1.0) => ({ x: local(x), y, xref: 'x', yref: 'paper', text, showarrow: false,
       xanchor: anchor, yanchor: 'bottom', font: { size: 12, color: '#101828', family: 'Inter, system-ui, sans-serif' } });
     const annotations = [
-      label(buffer, narrow ? `Buffer <b>${data.buffer_deadline_text}</b> ▸` : `Buffer deadline <b>${data.buffer_deadline_text}</b> ▸`, 'right'),
-      label(cutoff, narrow ? `◂ Cutoff <b>${data.cutoff_text}</b>` : `◂ Pick cutoff <b>${data.cutoff_text}</b>`, 'left'),
+      label(buffer, narrow ? `Buffer <b>${data.buffer_deadline_text}</b> ▸` : `Buffer deadline <b>${data.buffer_deadline_text}</b> ▸`, 'right', 1.025),
+      label(cutoff, narrow ? `◂ Cutoff <b>${data.cutoff_text}</b>` : `◂ Pick cutoff <b>${data.cutoff_text}</b>`, 'left', 1.105),
     ];
     if (!narrow) annotations.push({ ...label(now, `Now ${data.now_text}`, 'left'), y: 0, yanchor: 'top', yshift: -22,
       font: { size: 11, color: '#475467' } });
@@ -101,9 +101,9 @@
     Plotly.newPlot(panel, [etc, ready], {
       paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
       font: { family: 'Inter, system-ui, sans-serif', size: 11, color: '#475467' },
-      height: (narrow ? 80 : 96) + rows.length * (narrow ? 92 : 84),
-      margin: { t: 34, r: narrow ? 6 : 16, b: narrow ? 34 : 52, l: narrow ? 6 : 12 },
-      showlegend: false, bargap: 0.5,
+      height: (narrow ? 122 : 130) + rows.length * (narrow ? 104 : 92),
+      margin: { t: 70, r: narrow ? 12 : 20, b: narrow ? 38 : 52, l: narrow ? 8 : 12 },
+      showlegend: false, barmode: 'group', bargap: 0.58,
       xaxis: { type: 'date', range: [local(lo), local(hi)], tickformat: '%H:%M', showgrid: true,
         nticks: narrow ? 4 : 10, tickangle: 0,
         gridcolor: 'rgba(16,24,40,0.06)', zeroline: false, fixedrange: true, automargin: true },

@@ -65,7 +65,7 @@ Historical SMD source, test suite, and documentation were not deleted; the new i
 - Shift 06:00–14:30, break 10:00–10:30; order `ORD-1042`, 10 good tanks due 14:30. Three earlier approved tanks await WC2.
 - WC1 demonstration: 200 worker-min per tank, five qualified workers → 40 min; four workers → 50 min; minimum crew three.
 - WC2: 30 min/tank with four workers, minimum four; WC3: 20 min painting plus 20 min curing; WC4: 10 min with two, 20 min with one.
-- Combined absence + one permanently scrapped tank without action: 9 good by due, WC2 waiting 115 minutes. Replacement alone: ninth good by due and tenth finishes 14:45. Qualified Aaron transfer + replacement `TANK-0021`: projected 10 good at 14:21. Illustrative longer handover: 10 at 14:22.
+- Combined absence + one permanently scrapped tank without action: 9 good by due, WC2 waiting 115 minutes. Replacement alone: ninth good by due and tenth finishes 14:45. Qualified Arun transfer + replacement `TANK-0021`: projected 10 good at 14:21. Illustrative longer handover: 10 at 14:22.
 - The scenario numbers above come from the PDF's *illustrative* expected-results table, not a general simulation; stage backlog rate shown on station pages is calculated as `60 / modeled_cycle_minutes` (units/hour). There is **no** verified real-world unit-level ETA / financial ROI computation.
 - Numeric CTQs with nominal/drawing not supplied are reviewed manually. Never infer numeric minimum/maximum from `ISO 2768-1 Grade C` alone, or from `-0% / +20%` without a nominal.
 - No operator is considered at fault merely because they worked at a failed station; inspector is detector, not automatically root cause.
@@ -76,7 +76,7 @@ Historical SMD source, test suite, and documentation were not deleted; the new i
 | --- | --- |
 | Workbook CTQ extraction cross-check | **PASS**: 24/24 source rows mapped, zero differences across 11 text fields |
 | Work center and component mapping | **PASS**: 8 WC identifiers and independent routes, in new logic suite |
-| Recovery source/minimum crew | **PASS**: feasible Aaron, rejected unsafe Paige and unavailable relief (logic fixture tests) |
+| Recovery source/minimum crew | **PASS**: feasible Arun, rejected unsafe Priya and unavailable relief (logic fixture tests) |
 | Inspection state logic | **PASS**: first-stage fail scrap, later hold, incomplete/review block, complete stage release to next WC |
 | Known-at event integrity | **PASS**: failure cannot appear at 10:45; available from 10:48 |
 | Upload signature checks | **PASS**: valid image signature examples and malformed file cases |

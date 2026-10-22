@@ -697,3 +697,13 @@ a {color:var(--accent)}
 /* v14 status history and scenario replay */
 .status-change-row > td {background:#fffaf0}
 .scenario-strip {background:#f1f7ff;border-color:#c9dcff}
+
+/* Compact legend stays above (never over) the grouped ETC bars on narrow screens. */
+.etc-mobile-legend{display:flex;flex-wrap:wrap;align-items:center;gap:8px 17px;margin:12px 0 2px;font-size:11px;line-height:1.5;color:#475467}
+.etc-mobile-legend>span{display:inline-flex;align-items:center;gap:6px}
+.etc-legend-key{display:inline-block;flex:none;width:16px;height:10px;border-radius:2px}
+.etc-legend-etc{background:#148b77}.etc-legend-cutoff{background:#a8bad2}
+.etc-legend-high{width:3px;height:15px;background:#a56a0a;border-radius:0}
+.etc-legend-unknown{height:12px;width:12px;position:relative}
+.etc-legend-unknown::before,.etc-legend-unknown::after{content:"";position:absolute;left:5px;top:0;height:12px;width:2px;background:#705e96;transform:rotate(45deg)}
+.etc-legend-unknown::after{transform:rotate(-45deg)}

@@ -59,7 +59,7 @@ def test_unskilled_and_absent_blocked(db):
         start_task(db,'W-006','COVER-1002','WC5',UNIT_MAP['COVER-1002'],now=BASE)
     with pytest.raises(WorkflowError,match='absent'):
         start_task(db,'W-005','TANK-0019','WC1',UNIT_MAP['TANK-0019'],now=BASE)
-    # In the normal scenario Ryan is explicitly present, not permanently absent.
+    # In the normal scenario Ravi is explicitly present, not permanently absent.
     start_task(db,'W-005','TANK-0019','WC1',UNIT_MAP['TANK-0019'],worker_state='Present',now=BASE)
 
 def test_wrong_station_and_ended_unit_blocked(db):

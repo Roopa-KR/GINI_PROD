@@ -4,7 +4,7 @@
 
 ## Starting the app in VS Code (Windows / PowerShell)
 
-Open **this folder** (`GiNi_Manufacturing_App`) in VS Code, then run:
+Extract the ZIP and open the **`GINI_PROD-main`** folder (the folder containing `app.py`) in VS Code, then run:
 
 ```powershell
 py -3 -m venv .venv
@@ -13,7 +13,7 @@ python -m pip install -r requirements-dev.txt
 python app.py
 ```
 
-Open `http://127.0.0.1:5008/` in your browser. If PowerShell blocks activation, use `.\.venv\Scripts\python.exe -m pip install -r requirements-manufacturing.txt` and `.\.venv\Scripts\python.exe app.py` directly. To run the focused manufacturing and route tests: `python -m pytest -q tests/test_mfg_logic.py tests/test_mfg_render.py tests/test_mfg_schema.py tests/test_manufacturing_routes.py`. Flask route tests need Flask installed; they are skipped in an environment without it.
+Open `http://127.0.0.1:5006/` in your browser (the port configured in `app.py`). If PowerShell blocks activation, use `.\.venv\Scripts\python.exe -m pip install -r requirements-manufacturing.txt` and `.\.venv\Scripts\python.exe app.py` directly. To run the focused manufacturing and route tests: `python -m pytest -q tests/test_mfg_logic.py tests/test_mfg_render.py tests/test_mfg_schema.py tests/test_manufacturing_routes.py`. Flask route tests need Flask installed; they are skipped in an environment without it.
 
 ### Navigation
 
@@ -52,7 +52,7 @@ See `docs/manufacturing/CODE_REVIEW_AND_VALIDATION_20261016.md` for the exact de
 
 ## New: operator execution, work orders, LMS and confirmed points (16 October 2026)
 
-The additional source references (`EN_Siemens_CTQ_Guide 1(2).xlsx`, `Mockup ingles html(1).html`, 00:04–04:07 of Robert's transcript, and four newly confirmed point weights) informed a cautious shop-floor extension:
+The additional source references (`EN_Siemens_CTQ_Guide 1(2).xlsx`, `Mockup ingles html(1).html`, 00:04–04:07 of Rajesh's transcript, and four newly confirmed point weights) informed a cautious shop-floor extension:
 
 - `/operator` — choose WC1–WC8, worker and physical unit; start/pause/resume/finish UTC-clocked task; inspect source CTQs; record an incoming decision or report a defect.
 - `/work-orders` — drill from work order to work-center stage and unit, with CTQ/task/receiving/defect history.
@@ -68,3 +68,14 @@ python -m pytest -q tests/test_mfg_logic.py tests/test_mfg_schema.py tests/test_
 ```
 
 For implemented functionality, exact non-goals, 20 open clarification questions, and the test limitations, see `docs/manufacturing/SHOPFLOOR_IMPLEMENTATION_AND_OPEN_QUESTIONS_20261016.md` and `docs/manufacturing/SHOPFLOOR_TEST_REPORT_20261016.md`.
+
+## Chart clarity and UI refinement (22 October 2026)
+
+- **Manufacturing recovery planner:** an aligned, responsive before/after staffing chart now shows the fixed combined-disruption transfer proposal at 10:55: WC1 4 → 5 workers and WC4 2 → 1 workers. The worker is moved, not duplicated; planned staffing and minimum crew come from the existing work-center master. The chart is explicitly labeled as a **fixed illustrative proposal** rather than a live allocation or recomputed production forecast.
+- **Manufacturing shift overview:** the order-status stacked bar has visibly separated segments, a legend with quantities, and an accessible description. Values still come from registered tank statuses; no sample values were fabricated to make the graph look better. The 9 → 10 recovery illustration is explicitly labeled as a *reference scenario* on all replay selections.
+- **Legacy SMD dashboard (reference-only):** the ETC versus buffered cutoff comparison now uses grouped horizontal bars with independent categories instead of crowded vertical bars. All point ETCs, cutoff balances, uncertainty markers and missing-rate indicators remain sourced from the server-side chart payload; overdue cutoff balances remain negative. On narrow screens, the legend sits *above* the plot rather than overlapping the first row.
+- **Legacy ready-time chart (reference-only):** cutoff and buffer deadline annotations have separate positions; row spacing and plot margins allow readable labels. The business calculation and status bands were not altered.
+
+Validation: `PYTHONPATH=. python scripts/check_manufacturing_templates.py` (13 page templates rendered); 76 focused Python checks passed using the environment's available dependencies. The grouped ETC chart was also rendered in headless Chromium with locally included Plotly at desktop and narrow widths; the recovery chart was checked at 1440 px and 390 px. Flask route tests cannot be performed in the current restricted validation environment because Flask cannot be installed. The original legacy truck database fixture is also not included as a populated database, so its source-dependent tests cannot be used to assert overall system readiness. Install requirements on the target development machine and test application routes/POST actions before deployment.
+
+See `docs/manufacturing/CHART_UI_FIX_20261022.md` for the exact changes and validation scope.

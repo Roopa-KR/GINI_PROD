@@ -108,18 +108,56 @@
       const valid=reference.trucks.map((name,i)=>({name, etc:reference.etc[i], high:reference.etc_high[i],
                                                    cutoff:reference.cutoff[i],status:reference.status[i]}));
       if(!valid.length) {document.getElementById('etc-chart').textContent='No open truck work in this snapshot.';return;}
-      safePlot('etc-chart',[
-        {type:'bar',name:'Point ETC (h)',x:valid.map(x=>x.name),y:valid.map(x=>x.etc),
-         marker:{color:valid.map(x=>x.status==='ON TIME'?'#34c985':'#ef6873')}},
-        {type:'bar',name:'Hours to buffered cutoff',x:valid.map(x=>x.name),y:valid.map(x=>x.cutoff),
-         marker:{color:'#cad5e7'}},
-        {type:'scatter',mode:'markers',name:'Conservative ETC (h)',x:valid.map(x=>x.name),y:valid.map(x=>x.high),
-         marker:{size:10,color:'#f0b74b',symbol:'line-ew-open'}},
-        {type:'scatter',mode:'markers',name:'No observed rate',x:valid.filter(x=>x.etc===null).map(x=>x.name),
-         y:valid.filter(x=>x.etc===null).map(()=>0),marker:{size:10,color:'#ad9dba',symbol:'x'}}
-      ],{...chartTheme,barmode:'group',showlegend:true,
-         legend:{orientation:'h',y:1.2,font:{size:10}},margin:{t:50,r:15,b:105,l:45},
-         xaxis:{tickangle:-40,tickfont:{size:9}},yaxis:{title:'Hours',gridcolor:'#eff2f6'}});
+      // Horizontal grouped bars keep the two measures separate for every truck.
+      // The cutoff measure may be negative when the buffered deadline has passed:
+      // never clamp it or substitute a synthetic value.
+      const labels = valid.map(x => x.name);
+      const missing = valid.filter(x => x.etc === null);
+      const chart = document.getElementById('etc-chart');
+      const narrow = chart.clientWidth < 650;
+      chart.style.height = `${Math.max(380, 110 + labels.length * 46)}px`;
+      // A fixed chart legend can cover the first bar when Plotly wraps it to
+      // multiple lines on phones. Put that legend in normal document flow.
+      if (narrow && !chart.parentElement.querySelector('.etc-mobile-legend')) {
+        const legend = document.createElement('div');
+        legend.className = 'etc-mobile-legend';
+        legend.setAttribute('aria-label', 'ETC comparison chart legend');
+        [['etc','Point ETC'], ['cutoff','Time to buffer deadline'],
+         ['high','Conservative ETC'], ['unknown','No observed rate']].forEach(([key, name]) => {
+          const entry = document.createElement('span');
+          const marker = document.createElement('i');
+          marker.className = `etc-legend-key etc-legend-${key}`;
+          marker.setAttribute('aria-hidden', 'true');
+          entry.append(marker, document.createTextNode(name));
+          legend.appendChild(entry);
+        });
+        chart.parentNode.insertBefore(legend, chart);
+      }
+      safePlot('etc-chart', [
+        {type:'bar',orientation:'h',name:'Point ETC (h)',
+         y:labels,x:valid.map(x=>x.etc),offsetgroup:'etc',width:0.31,
+         marker:{color:valid.map(x=>x.status==='ON TIME'?'#148b77':'#cf5361')},
+         hovertemplate:'<b>%{y}</b><br>Point ETC: %{x:.2f} hours<extra></extra>'},
+        {type:'bar',orientation:'h',name:'Hours to buffered cutoff',
+         y:labels,x:valid.map(x=>x.cutoff),offsetgroup:'cutoff',width:0.31,
+         marker:{color:'#a8bad2'},
+         hovertemplate:'<b>%{y}</b><br>Time to buffered cutoff: %{x:.2f} hours<extra></extra>'},
+        {type:'scatter',mode:'markers',name:'Conservative ETC (h)',
+         y:labels,x:valid.map(x=>x.high),
+         marker:{size:12,color:'#a56a0a',symbol:'line-ns-open',line:{width:2}},
+         hovertemplate:'<b>%{y}</b><br>Conservative ETC: %{x:.2f} hours<extra></extra>'},
+        {type:'scatter',mode:'markers',name:'No observed rate',
+         y:missing.map(x=>x.name),x:missing.map(()=>0),
+         marker:{size:12,color:'#705e96',symbol:'x'},
+         hovertemplate:'<b>%{y}</b><br>No observed rate (ETC unavailable)<extra></extra>'}
+      ], {...chartTheme,barmode:'group',bargap:0.34,bargroupgap:0.15,
+          showlegend:!narrow,legend:{orientation:'h',y:1.11,x:0,font:{size:10}},
+          margin:{t:narrow?18:68,r:narrow?14:28,b:50,l:narrow?106:130},
+          xaxis:{title:'Hours from the selected snapshot',gridcolor:'#eff2f6',
+                 zeroline:true,zerolinecolor:'#6b7280',automargin:true},
+          yaxis:{type:'category',categoryorder:'array',categoryarray:labels.slice().reverse(),
+                 tickfont:{size:11},automargin:true,showgrid:false},
+          hovermode:'closest'});
     });
   }
 })();

@@ -21,7 +21,8 @@ ctx=dict(scene=scenario,asof='10:55',centers=center,units=units,workers=WORKERS,
     worker=worker,transfer=verify_candidate('W-012'),home=CENTER_MAP['WC4'],
     wc_filter='all',recorded_count=0,
     check=ordered_ctqs('WC1')[0],existing=None,inspection_allowed=True,
-    candidates=[{'worker':WORKER_MAP[i],'test':verify_candidate(i)} for i in ('W-012','W-006','W-023')]
+    candidates=[{'worker':WORKER_MAP[i],'test':verify_candidate(i)} for i in ('W-012','W-006','W-023')],
+    crew_preview=reference_transfer_crew()
 )
 orders=work_order_overview(units,[])
 ctx.update(selected_wc='WC1',selected_worker='W-001',wc_workers=WORKERS[:5],

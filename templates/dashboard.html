@@ -153,8 +153,8 @@
 </div>
 <section class="card analytics-card reference-chart" aria-labelledby="etc-reference-title">
   <details>
-    <summary class="reference-toggle"><span><i class="bi bi-bar-chart-steps"></i> <strong id="etc-reference-title">ETC versus time to buffered cutoff</strong><small>Existing truck-level comparison · expand chart</small></span><i class="bi bi-chevron-down" aria-hidden="true"></i></summary>
-    <div class="reference-chart-inner"><div id="etc-chart" class="chart"></div><p class="card-note">Point ETC, slower measured-pace bound, and hours remaining to each truck's effective buffered cutoff. Missing rate is explicitly marked unknown.</p></div>
+    <summary class="reference-toggle"><span><i class="bi bi-bar-chart-steps"></i> <strong id="etc-reference-title">ETC versus time to buffered cutoff</strong><small>Per-truck grouped bars · expand comparison</small></span><i class="bi bi-chevron-down" aria-hidden="true"></i></summary>
+    <div class="reference-chart-inner"><div id="etc-chart" class="chart"></div><p class="card-note">Side-by-side point ETC and hours remaining to the buffered cutoff. The conservative ETC is a marker; negative hours mean the buffer deadline has passed. Missing rate is explicitly marked unknown.</p></div>
   </details>
 </section>
 <details class="accessibility-data"><summary>Accessible snapshot trend data</summary><table><caption>On-time and risk status by snapshot</caption><thead><tr><th>Time</th><th>On-time share</th><th>At risk</th><th>Critical</th><th>Unknown</th><th>Completed in interval</th></tr></thead><tbody>{% for x in trend %}<tr><td>{{ x.time }}</td><td>{{ x.on_time }}%</td><td>{{ x.risk }}</td><td>{{ x.critical }}</td><td>{{ x.unknown }}</td><td>{{ x.completed if x.completed is not none else 'Baseline' }}</td></tr>{% endfor %}</tbody></table></details>
